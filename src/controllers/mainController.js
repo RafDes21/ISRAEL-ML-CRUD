@@ -1,3 +1,4 @@
+const { query } = require('express');
 const fs = require('fs');
 const path = require('path');
 
@@ -9,9 +10,22 @@ const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 const controller = {
 	index: (req, res) => {
 		// Do the magic
+		return res.render('index', {
+			productsVisited : products.filter(product => product.category === "visited"),
+			productsInSale : products.filter(product => product.category === "in-sale"),
+			toThousand
+		})
 	},
 	search: (req, res) => {
 		// Do the magic
+		const results = products.filter(product => product.name.toLowerCase().includes(req.query.keywords.toLowerCase()))
+		
+		
+		return res.render('results',{
+			results,
+			toThousand,
+			keywords : req.query.keywords
+		})
 	},
 };
 
