@@ -33,7 +33,7 @@ const controller = {
       discount: +discount,
       category,
       description: description.trim(),
-      image: null,
+      image: req.file ? req.file.filename : null,
     };
     products.push(newProduct);
 
@@ -77,18 +77,12 @@ const controller = {
     return res.redirect("/products");
   },
 
-  // Delete - Delete one product from DB
   destroy: (req, res) => {
-    // Do the magic
     const productModify = products.filter(
       (product) => product.id !== +req.params.id
     );
 
-    fs.writeFileSync(
-      productsFilePath,
-      JSON.stringify(productModify, null, 3),
-      "utf-8"
-    );
+    writeJSON(productModify, "productsDataBase.json");
 
     return res.redirect("/products");
   },
