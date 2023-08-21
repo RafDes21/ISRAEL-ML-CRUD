@@ -1,6 +1,6 @@
 const { readJSON, writeJSON } = require("../data");
 
-const products = readJSON("./productsDataBase.json");
+let products = readJSON("./productsDataBase.json");
 const toThousand = (n) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 const controller = {
@@ -83,7 +83,7 @@ const controller = {
     );
 
     writeJSON(productModify, "productsDataBase.json");
-
+    products = productModify; 
     return res.redirect("/products");
   },
 };
