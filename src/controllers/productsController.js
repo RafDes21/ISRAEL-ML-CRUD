@@ -42,18 +42,15 @@ const controller = {
     return res.redirect("/products");
   },
 
-  // Update - Form to edit
   edit: (req, res) => {
-    // Do the magic
     const product = products.find((product) => product.id === +req.params.id);
     return res.render("product-edit-form", {
       ...product,
       toThousand,
     });
   },
-  // Update - Method to update
+
   update: (req, res) => {
-    // Do the magic
     const { name, price, discount, description, category } = req.body;
 
     const productModify = products.map((product) => {
@@ -67,13 +64,7 @@ const controller = {
 
       return product;
     });
-
-    fs.writeFileSync(
-      productsFilePath,
-      JSON.stringify(products, null, 3),
-      "utf-8"
-    );
-
+    writeJSON(productModify, "productsDataBase.json");
     return res.redirect("/products");
   },
 
@@ -83,7 +74,7 @@ const controller = {
     );
 
     writeJSON(productModify, "productsDataBase.json");
-    products = productModify; 
+    products = productModify;
     return res.redirect("/products");
   },
 };
