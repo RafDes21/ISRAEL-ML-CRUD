@@ -1,4 +1,6 @@
 const { readJSON, writeJSON } = require("../data");
+const { unlinkSync, existsSync } = require("fs");
+
 
 let products = readJSON("./productsDataBase.json");
 const toThousand = (n) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -52,18 +54,23 @@ const controller = {
 
   update: (req, res) => {
     const { name, price, discount, description, category } = req.body;
-
+ 
     const productModify = products.map((product) => {
       if (product.id === +req.params.id) {
+        req.file &&
+        existsSync(`./public/images/products/${product.image}`) &&
+        unlinkSync(`./public/images/products/${product.image}`);
         product.name = name.trim();
         product.price = +price;
         product.discount = +discount;
         product.category = category;
         product.description = description.trim();
+        product.image = req.file ? req.file.filename : product.image;
       }
 
       return product;
     });
+
     writeJSON(productModify, "productsDataBase.json");
     return res.redirect("/products");
   },

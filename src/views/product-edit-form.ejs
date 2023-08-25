@@ -14,7 +14,7 @@
 			</div>
 		</div>
 		<div class="col-12">
-			<form action="/products/edit/<%= id %>?_method=PUT" method="POST">
+			<form action="/products/edit/<%= id %>?_method=PUT" method="POST" enctype="multipart/form-data">
 				<div class="row product-detail">
 					<div class="col-12 col-md-6">
 						<label for="name" class="form-label">Nombre del producto:</label>
@@ -34,6 +34,15 @@
 							<option value="in-sale" <%= category === "in-sale" && 'selected' %>>En oferta</option>
 							<option value="visited" <%= category === "visited" && 'selected' %>>Últimos agregados</option>
 						</select>
+					</div>
+					<div class="col-12 d-flex flex-column flex-md-row my-2 ">
+						<div style="width: 18rem">
+							<img  src="/images/products/<%= image || 'default-image.png' %>" alt="img-update" />
+						</div>
+						<div class="d-flex flex-column justify-content-center">
+							<label for="image" class="my-3">Elije una nueva imagen...</label>
+							<input type="file" id="image" name="image"/>
+						</div>
 					</div>
 					<div class="col-12">
 						<label for="description" class="form-label">Descipción:</label>
