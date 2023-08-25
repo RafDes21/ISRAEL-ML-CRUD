@@ -1,23 +1,22 @@
-const { readJSON, writeJSON } = require("../data");
-const { unlinkSync, existsSync } = require("fs");
-
-
-let products = readJSON("./productsDataBase.json");
+const ProductModel = require("../models/productModel");
 const toThousand = (n) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 const controller = {
   index: (req, res) => {
+    const products = ProductModel.getAllProducts();
     return res.render("products", {
       products,
-      toThousand,
+      toThousand
     });
   },
 
   detail: (req, res) => {
-    const product = products.find((product) => product.id === +req.params.id);
+    const productId = +req.params.id;
+    const product = ProductModel.getProductById(productId);
+    console.log(product);
     return res.render("detail", {
       ...product,
-      toThousand,
+      toThousand
     });
   },
 
@@ -28,8 +27,7 @@ const controller = {
   store: (req, res) => {
     const { name, price, discount, description, category } = req.body;
 
-    let newProduct = {
-      id: products[products.length - 1].id + 1,
+    const newProduct = {
       name: name.trim(),
       price: +price,
       discount: +discount,
@@ -37,51 +35,41 @@ const controller = {
       description: description.trim(),
       image: req.file ? req.file.filename : null,
     };
-    products.push(newProduct);
-
-    writeJSON(products, "productsDataBase.json");
+    ProductModel.addProduct(newProduct);
 
     return res.redirect("/products");
   },
 
   edit: (req, res) => {
-    const product = products.find((product) => product.id === +req.params.id);
+    const productId = +req.params.id;
+    const product = ProductModel.getProductById(productId);
     return res.render("product-edit-form", {
       ...product,
-      toThousand,
+      toThousand
     });
   },
 
   update: (req, res) => {
+    const productId = +req.params.id;
+    const imgUpdate = req.file
     const { name, price, discount, description, category } = req.body;
- 
-    const productModify = products.map((product) => {
-      if (product.id === +req.params.id) {
-        req.file &&
-        existsSync(`./public/images/products/${product.image}`) &&
-        unlinkSync(`./public/images/products/${product.image}`);
-        product.name = name.trim();
-        product.price = +price;
-        product.discount = +discount;
-        product.category = category;
-        product.description = description.trim();
-        product.image = req.file ? req.file.filename : product.image;
-      }
+    const updatedProductData = {
+      name: name.trim(),
+      price: +price,
+      discount: +discount,
+      category,
+      description: description.trim(),
+      image: req.file ? req.file.filename : null,
+    };
+    ProductModel.updateProduct(productId, updatedProductData, imgUpdate);
 
-      return product;
-    });
-
-    writeJSON(productModify, "productsDataBase.json");
     return res.redirect("/products");
   },
 
   destroy: (req, res) => {
-    const productModify = products.filter(
-      (product) => product.id !== +req.params.id
-    );
+    const productId = +req.params.id;
+    ProductModel.deleteProduct(productId);
 
-    writeJSON(productModify, "productsDataBase.json");
-    products = productModify;
     return res.redirect("/products");
   },
 };
