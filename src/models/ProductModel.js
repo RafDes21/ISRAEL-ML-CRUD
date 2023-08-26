@@ -1,5 +1,5 @@
 const { readJSON, writeJSON } = require("../data");
-const { unlinkSync, existsSync } = require("fs");
+const deleteImage = require("../utils/deleteImage");
 
 const productsFilePath = "./productsDataBase.json";
 
@@ -21,17 +21,17 @@ const ProductModel = {
     writeJSON(products, productsFilePath);
   },
 
-  updateProduct: (productId, updatedProductData, imgUpdate) => {
+  updateProduct: (productId, updatedProductData) => {
     const products = readJSON(productsFilePath);
     const updatedProducts = products.map((product) => {
       if (product.id === productId) {
-        imgUpdate &&
-          existsSync(`./public/images/products/${product.image}`) &&
-          unlinkSync(`./public/images/products/${product.image}`);
-        const updatedImage =
-          updatedProductData.image !== null
-            ? updatedProductData.image
-            : product.image;
+        let updatedImage 
+        if (updatedProductData.image !== null) {
+          deleteImage(product.image);
+          updatedImage = updatedProductData.image
+        }else{
+          updatedImage =product.image
+        }
         return { ...product, ...updatedProductData, image: updatedImage };
       }
       return product;
@@ -43,8 +43,7 @@ const ProductModel = {
     const products = readJSON(productsFilePath);
     const filteredProducts = products.filter((product) => {
       if (product.id === productId) {
-        existsSync(`./public/images/products/${product.image}`) &&
-          unlinkSync(`./public/images/products/${product.image}`);
+        deleteImage(product.image);
       }
       return product.id !== productId;
     });

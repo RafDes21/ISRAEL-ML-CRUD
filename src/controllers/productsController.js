@@ -13,7 +13,6 @@ const controller = {
   detail: (req, res) => {
     const productId = +req.params.id;
     const product = ProductModel.getProductById(productId);
-    console.log(product);
     return res.render("detail", {
       ...product,
       toThousand
@@ -26,7 +25,6 @@ const controller = {
 
   store: (req, res) => {
     const { name, price, discount, description, category } = req.body;
-
     const newProduct = {
       name: name.trim(),
       price: +price,
@@ -51,7 +49,6 @@ const controller = {
 
   update: (req, res) => {
     const productId = +req.params.id;
-    const imgUpdate = req.file
     const { name, price, discount, description, category } = req.body;
     const updatedProductData = {
       name: name.trim(),
@@ -61,7 +58,7 @@ const controller = {
       description: description.trim(),
       image: req.file ? req.file.filename : null,
     };
-    ProductModel.updateProduct(productId, updatedProductData, imgUpdate);
+    ProductModel.updateProduct(productId, updatedProductData);
 
     return res.redirect("/products");
   },
